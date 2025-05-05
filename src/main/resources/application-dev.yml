@@ -1,0 +1,5 @@
+# Development-specific configurations
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
