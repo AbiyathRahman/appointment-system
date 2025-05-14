@@ -12,7 +12,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findPatientByFirstName(String firstName);
     List<Patient> findPatientByLastName(String lastName);
     List<Patient> findPatientByGender(Gender gender);
-    List<Patient> findPatientByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Patient> findPatientByFirstNameAndLastName(String firstName, String lastName);
     Optional <Patient> findPatientByBirthDate(LocalDate birthDate);
     boolean existsByFirstName(String firstName);
     boolean existsByLastName(String lastName);
