@@ -14,6 +14,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAppointmentByDoctorId(Long doctorId);
     List<Appointment> findAppointmentByPatientId(Long patientId);
     List<Appointment> findAppointmentByStatus(AppointmentStatus status);
+    Optional<Appointment> findAppointmentByDoctorIdAndPatientId(Long doctorId, Long patientId);
     List<Appointment> findAppointmentByAppointmentDateTime(LocalDateTime appointmentDateTime);
     boolean existsByDoctorId(Long doctorId);
     boolean existsByPatientId(Long patientId);
