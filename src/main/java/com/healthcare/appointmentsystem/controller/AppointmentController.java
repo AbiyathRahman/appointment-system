@@ -2,6 +2,7 @@ package com.healthcare.appointmentsystem.controller;
 
 import com.healthcare.appointmentsystem.dto.AppointmentRequestDTO;
 import com.healthcare.appointmentsystem.dto.AppointmentResponseDTO;
+import com.healthcare.appointmentsystem.dto.DoctorDTO;
 import com.healthcare.appointmentsystem.mapper.AppointmentMapper;
 import com.healthcare.appointmentsystem.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +74,26 @@ public class AppointmentController {
             .collect(Collectors.toList());
         return ResponseEntity.ok(responseDTOs);
     }
-
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
+        var appointmentsByDoctor = appointmentService.findAppointmentByDoctorId(doctorId);
+        if(appointmentsByDoctor.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        var responseDTOs = appointmentsByDoctor.stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+    }
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByPatientId(@PathVariable Long patientId){
+        var appointmentsByPatient = appointmentService.findAppointmentByPatientId(patientId);
+        if(appointmentsByPatient.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        var responseDTOs = appointmentsByPatient.stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+    }
 }
