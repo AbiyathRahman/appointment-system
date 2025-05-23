@@ -20,5 +20,5 @@ public interface AppointmentService {
     List<Appointment> findAppointmentBetweenDates(LocalDate startDate, LocalDate endDate);
     boolean isTimeSlotAvailable(Long doctorId, LocalDate date, int duration);
     boolean hasConflict(Appointment appointment);
-
+    List<Appointment> findAllAppointments();
 }

@@ -7,6 +7,8 @@ import com.healthcare.appointmentsystem.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -19,6 +21,7 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
         this.appointmentMapper = appointmentMapper;
     }
+    // Create appointment
     @PostMapping
     public ResponseEntity<AppointmentResponseDTO> createAppointment(@RequestBody AppointmentRequestDTO requestDTO){
         var savedAppointment = appointmentMapper.toEntity(requestDTO);
@@ -26,6 +29,7 @@ public class AppointmentController {
         var responseDTO = appointmentMapper.toResponseDTO(appointment);
         return ResponseEntity.ok(responseDTO);
     }
+    // Find appointment by ID
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> getAppointmentById(@PathVariable Long id){
         var appointment = appointmentService.findAppointmentById(id);
@@ -35,6 +39,7 @@ public class AppointmentController {
         }
         return ResponseEntity.notFound().build();
     }
+    // Update Appointment by ID
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
         var appointmentToUpdate = appointmentService.findAppointmentById(id);
@@ -46,7 +51,7 @@ public class AppointmentController {
         }
         return ResponseEntity.notFound().build();
     }
-
+    // Delete Appointment By ID
     @DeleteMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> deleteAppointment(@PathVariable Long id) {
         var appointmentToDelete = appointmentService.findAppointmentById(id);
@@ -56,6 +61,17 @@ public class AppointmentController {
         }
         return ResponseEntity.notFound().build();
     }
-    
+    // Get all appointments
+    @GetMapping
+    public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments() {
+        var appointments = appointmentService.findAllAppointments();
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        var responseDTOs = appointments.stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+    }
 
 }

@@ -147,6 +147,8 @@ public boolean hasConflict(Appointment appointment) {
     );
 }
 
-
-
+@Override
+public List<Appointment> findAllAppointments() {
+    return appointmentRepository.findAll();
+}
 }
