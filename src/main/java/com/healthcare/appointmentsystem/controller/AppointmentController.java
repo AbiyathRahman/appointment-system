@@ -1,0 +1,61 @@
+package com.healthcare.appointmentsystem.controller;
+
+import com.healthcare.appointmentsystem.dto.AppointmentRequestDTO;
+import com.healthcare.appointmentsystem.dto.AppointmentResponseDTO;
+import com.healthcare.appointmentsystem.mapper.AppointmentMapper;
+import com.healthcare.appointmentsystem.service.AppointmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/appointments")
+public class AppointmentController {
+    private final AppointmentService appointmentService;
+    private final AppointmentMapper appointmentMapper;
+
+    @Autowired
+    public AppointmentController(AppointmentService appointmentService, AppointmentMapper appointmentMapper) {
+        this.appointmentService = appointmentService;
+        this.appointmentMapper = appointmentMapper;
+    }
+    @PostMapping
+    public ResponseEntity<AppointmentResponseDTO> createAppointment(@RequestBody AppointmentRequestDTO requestDTO){
+        var savedAppointment = appointmentMapper.toEntity(requestDTO);
+        var appointment = appointmentService.createAppointment(savedAppointment);
+        var responseDTO = appointmentMapper.toResponseDTO(appointment);
+        return ResponseEntity.ok(responseDTO);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDTO> getAppointmentById(@PathVariable Long id){
+        var appointment = appointmentService.findAppointmentById(id);
+        if(appointment != null){
+            var responseDTO = appointmentMapper.toResponseDTO(appointment);
+            return ResponseEntity.ok(responseDTO);
+        }
+        return ResponseEntity.notFound().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
+        var appointmentToUpdate = appointmentService.findAppointmentById(id);
+        if(appointmentToUpdate != null){
+            appointmentMapper.updateEntityFromDTO(requestDTO, appointmentToUpdate);
+            var appointment = appointmentService.updateAppointment(appointmentToUpdate);
+            var responseDTO = appointmentMapper.toResponseDTO(appointment);
+            return ResponseEntity.ok(responseDTO);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDTO> deleteAppointment(@PathVariable Long id) {
+        var appointmentToDelete = appointmentService.findAppointmentById(id);
+        if (appointmentToDelete != null) {
+            appointmentService.deleteAppointment(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+
+}
