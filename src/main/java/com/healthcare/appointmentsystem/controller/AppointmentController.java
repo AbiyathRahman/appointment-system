@@ -57,16 +57,7 @@ public class AppointmentController {
         }
         return ResponseEntity.notFound().build();
     }
-    // Delete Appointment By ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<AppointmentResponseDTO> deleteAppointment(@PathVariable Long id) {
-        var appointmentToDelete = appointmentService.findAppointmentById(id);
-        if (appointmentToDelete != null) {
-            appointmentService.deleteAppointment(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
-    }
+
     // Get all appointments
     @GetMapping
     public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments() {
@@ -133,18 +124,7 @@ public class AppointmentController {
         }
         return ResponseEntity.notFound().build();
     }
-    @PutMapping("/{id}")
-    public ResponseEntity<AppointmentResponseDTO> updateAppointmentById(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
-        var appointmentToUpdate = appointmentService.findAppointmentById(id);
-        if(appointmentToUpdate != null){
-            appointmentMapper.updateEntityFromDTO(requestDTO, appointmentToUpdate);
-            var appointment = appointmentService.updateAppointment(appointmentToUpdate);
-            var responseDTO = appointmentMapper.toResponseDTO(appointment);
-            return ResponseEntity.ok(responseDTO);
-        }else{
-            return ResponseEntity.notFound().build();
-        }
-    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<AppointmentResponseDTO> updateAppointmentStatusById(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
         var appointmentToUpdate = appointmentService.findAppointmentById(id);
