@@ -168,20 +168,21 @@ public class AppointmentController {
         }
     }
     @GetMapping("/available")
-    public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAvailableAppointments(@RequestParam Long doctorId, @RequestParam LocalDateTime date){
+    public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAvailableAppointments(@RequestParam Long doctorId, @RequestParam LocalDateTime date) {
         var availableAppointments = appointmentService.findAppointmentByDoctorIdAndPatientId(doctorId, null);
-        if(availableAppointments.isEmpty()){
+        if (availableAppointments.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         var availableAppointmentsByDate = availableAppointments.stream()
                 .filter(appointment -> appointment.getAppointmentDateTime().toLocalDate().equals(date.toLocalDate()))
                 .toList();
-        if(availableAppointmentsByDate.isEmpty()){
+        if (availableAppointmentsByDate.isEmpty()) {
             return ResponseEntity.noContent().build();
-        }else{
+        } else {
             var responseDTOs = availableAppointmentsByDate.stream()
-            .map(appointmentMapper::toResponseDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
+                    .map(appointmentMapper::toResponseDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responseDTOs);
+        }
     }
 }
