@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -94,8 +95,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentRepository.findAppointmentByPatientId(patientId);
     }
     @Override
-    public List<Appointment> findAppointmentByDate(LocalDate date){
-        return appointmentRepository.findAppointmentByAppointmentDateTime(java.time.LocalDateTime.of(date, java.time.LocalTime.MIN));
+    public List<Appointment> findAppointmentByDate(LocalDateTime date){
+        return appointmentRepository.findAppointmentByAppointmentDateTime(date.toLocalDate().atStartOfDay(java.time.ZoneId.systemDefault()).toLocalDateTime());
     }
     
     @Override

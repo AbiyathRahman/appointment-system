@@ -4,10 +4,15 @@ import com.healthcare.appointmentsystem.dto.AppointmentRequestDTO;
 import com.healthcare.appointmentsystem.dto.AppointmentResponseDTO;
 import com.healthcare.appointmentsystem.dto.DoctorDTO;
 import com.healthcare.appointmentsystem.mapper.AppointmentMapper;
+import com.healthcare.appointmentsystem.model.Appointment;
 import com.healthcare.appointmentsystem.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,6 +97,89 @@ public class AppointmentController {
             return ResponseEntity.noContent().build();
         }
         var responseDTOs = appointmentsByPatient.stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+    }
+    @GetMapping("/date/{date}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByDate(@PathVariable LocalDateTime date){
+        var appointmentsByDate = appointmentService.findAppointmentByDate(date);
+        if(appointmentsByDate.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        var responseDTOs = appointmentsByDate.stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+    }
+    @GetMapping("/range")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentByRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
+        var appointmentsByRange = appointmentService.findAppointmentBetweenDates(startDate, endDate);
+        if(appointmentsByRange.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        var responseDTOs = appointmentsByRange.stream()
+                .map(appointmentMapper::toResponseDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+
+    }
+    @GetMapping("/doctor/{doctorId}/patient/{patientId}")
+    public ResponseEntity<AppointmentResponseDTO> getAppointmentByDoctorAndPatient(@PathVariable Long doctorId, @PathVariable Long patientId){
+        var appointment = appointmentService.findAppointmentByDoctorIdAndPatientId(doctorId, patientId);
+        if(appointment.isPresent()){
+            var responseDTO = appointmentMapper.toResponseDTO(appointment.get());
+            return ResponseEntity.ok(responseDTO);
+        }
+        return ResponseEntity.notFound().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDTO> updateAppointmentById(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
+        var appointmentToUpdate = appointmentService.findAppointmentById(id);
+        if(appointmentToUpdate != null){
+            appointmentMapper.updateEntityFromDTO(requestDTO, appointmentToUpdate);
+            var appointment = appointmentService.updateAppointment(appointmentToUpdate);
+            var responseDTO = appointmentMapper.toResponseDTO(appointment);
+            return ResponseEntity.ok(responseDTO);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<AppointmentResponseDTO> updateAppointmentStatusById(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
+        var appointmentToUpdate = appointmentService.findAppointmentById(id);
+        if(appointmentToUpdate != null){
+            appointmentMapper.updateEntityFromDTO(requestDTO, appointmentToUpdate);
+            var appointment = appointmentService.updateAppointmentStatus(id, appointmentToUpdate.getStatus());
+            var responseDTO = appointmentMapper.toResponseDTO(appointment);
+            return ResponseEntity.ok(responseDTO);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDTO> deleteAppointmentById(@PathVariable Long id){
+        var appointmentToDelete = appointmentService.findAppointmentById(id);
+        if(appointmentToDelete != null){
+            appointmentService.deleteAppointment(id);
+            return ResponseEntity.noContent().build();
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @GetMapping("/available")
+    public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAvailableAppointments(@RequestParam Long doctorId, @RequestParam LocalDateTime date){
+        var availableAppointments = appointmentService.findAppointmentByDoctorIdAndPatientId(doctorId, null);
+        if(availableAppointments.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        var availableAppointmentsByDate = availableAppointments.stream()
+                .filter(appointment -> appointment.getAppointmentDateTime().toLocalDate().equals(date.toLocalDate()))
+                .toList();
+        if(availableAppointmentsByDate.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }else{
+            var responseDTOs = availableAppointmentsByDate.stream()
             .map(appointmentMapper::toResponseDTO)
             .collect(Collectors.toList());
         return ResponseEntity.ok(responseDTOs);
