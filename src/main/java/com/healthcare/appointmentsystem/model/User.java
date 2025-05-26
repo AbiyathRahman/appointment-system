@@ -14,14 +14,32 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name="username", unique=true, nullable=false)
     private String username;
     @Column(nullable = false)
     private String password;
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String roles;
+    private Role role;
+    @Column(name = "account_non_expired")
+    private boolean accountNonExpired = true;
+
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked = true;
+
+    @Column(name = "credentials_non_expired")
+    private boolean credentialsNonExpired = true;
+
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -30,11 +48,11 @@ public class User {
 
     public User() {}
 
-    public User(String username, String password, String email, String roles) {
+    public User(String username, String password, String email, Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.roles = roles;
+        this.role = role;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -52,9 +70,7 @@ public class User {
 
     }
 
-    public boolean hasRole(String role) {
-        return role != null && this.roles.contains(role);
-    }
+
 
 
 }
