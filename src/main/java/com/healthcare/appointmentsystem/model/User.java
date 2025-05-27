@@ -1,6 +1,7 @@
 package com.healthcare.appointmentsystem.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "users")
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +25,8 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+    @Column(name = "userRole", nullable = false)
+    private Role userRole;
     @Column(name = "account_non_expired")
     private boolean accountNonExpired = true;
 
@@ -52,7 +54,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
+        this.userRole = role;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

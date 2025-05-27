@@ -8,6 +8,7 @@ import com.healthcare.appointmentsystem.model.Appointment;
 import com.healthcare.appointmentsystem.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,7 @@ public class AppointmentController {
         return ResponseEntity.notFound().build();
     }
     // Update Appointment by ID
+    @PreAuthorize("hasRole('ROLE_DOCTOR') or hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id, @RequestBody AppointmentRequestDTO requestDTO){
         var appointmentToUpdate = appointmentService.findAppointmentById(id);
@@ -59,6 +61,7 @@ public class AppointmentController {
     }
 
     // Get all appointments
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments() {
         var appointments = appointmentService.findAllAppointments();
@@ -70,6 +73,7 @@ public class AppointmentController {
             .collect(Collectors.toList());
         return ResponseEntity.ok(responseDTOs);
     }
+    @PreAuthorize("hasRole('ROLE_DOCTOR') or hasRole('ROLE_ADMIN')")
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
         var appointmentsByDoctor = appointmentService.findAppointmentByDoctorId(doctorId);
@@ -81,6 +85,7 @@ public class AppointmentController {
             .collect(Collectors.toList());
         return ResponseEntity.ok(responseDTOs);
     }
+    @PreAuthorize("hasRole('ROLE_PATIENT') or hasRole('ROLE_ADMIN')")
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByPatientId(@PathVariable Long patientId){
         var appointmentsByPatient = appointmentService.findAppointmentByPatientId(patientId);
@@ -137,6 +142,7 @@ public class AppointmentController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> deleteAppointmentById(@PathVariable Long id){
         var appointmentToDelete = appointmentService.findAppointmentById(id);

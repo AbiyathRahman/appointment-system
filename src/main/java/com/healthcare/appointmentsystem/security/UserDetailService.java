@@ -27,7 +27,7 @@ public class UserDetailService implements UserDetailsService {
                 user.isAccountNonExpired(),
                 user.isCredentialsNonExpired(),
                 user.isAccountNonLocked(),
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
+                Collections.singletonList(new SimpleGrantedAuthority(user.getUserRole().name()))
         );
     }
 }
