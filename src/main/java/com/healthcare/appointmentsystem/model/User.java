@@ -25,8 +25,8 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "userRole", nullable = false)
-    private Role userRole;
+    @Column(name = "roles", nullable = false)
+    private Role userRole ;
     @Column(name = "account_non_expired")
     private boolean accountNonExpired = true;
 
@@ -65,6 +65,7 @@ public class User {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+
     }
     @PreUpdate
     protected void onUpdate() {
