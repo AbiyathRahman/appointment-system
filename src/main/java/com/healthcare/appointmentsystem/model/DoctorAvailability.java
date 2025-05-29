@@ -48,6 +48,8 @@ public class DoctorAvailability {
     private LocalDate createDate;
     @Column(name = "updated_at")
     private LocalDate updateDate;
+    @Column(name="notes")
+    private String notes;
 
     @PrePersist
     private void onCreate() {
@@ -69,5 +71,6 @@ public class DoctorAvailability {
 
     // Check if time falls within this availablity's hour
     public boolean containsTime(LocalTime time){return !time.isBefore(startTime) && !time.isAfter(endTime);}
+
 
 }
