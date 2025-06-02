@@ -9,6 +9,7 @@ import com.healthcare.appointmentsystem.repository.AppointmentRepository;
 import com.healthcare.appointmentsystem.repository.DoctorRepository;
 import com.healthcare.appointmentsystem.repository.PatientRepository;
 import com.healthcare.appointmentsystem.service.AppointmentService;
+import com.healthcare.appointmentsystem.service.DoctorAvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,24 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
 
+    // Properly declare the DoctorAvailabilityService as a field
+    private final DoctorAvailabilityService availabilityService;
+
     @Autowired
-    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository) {
+    public AppointmentServiceImpl(
+            AppointmentRepository appointmentRepository,
+            PatientRepository patientRepository,
+            DoctorRepository doctorRepository,
+            DoctorAvailabilityService availabilityService) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
+        this.availabilityService = availabilityService;
     }
+
+
+
+    // Then update the createAppointment method
 
     @Override
     public Appointment createAppointment(Appointment appointment) {
@@ -55,6 +68,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (!isTimeSlotAvailable(appointment.getDoctor().getId(), 
                                  appointment.getAppointmentDateTime().toLocalDate(), 30)) {
             throw new ConflictException("Time slot is not available for this doctor");
+        }
+        
+        // Check if the doctor is available at this time
+        boolean isDoctorAvailable = availabilityService.isDoctorAvailableAt(
+                appointment.getDoctor().getId(),
+                appointment.getAppointmentDateTime().toLocalDate(),
+                appointment.getAppointmentDateTime().toLocalTime());
+        
+        if (!isDoctorAvailable) {
+            throw new ConflictException("Doctor is not available at this time");
         }
         
         // Check for conflicts with existing appointments

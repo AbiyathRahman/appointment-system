@@ -1,6 +1,7 @@
 package com.healthcare.appointmentsystem.service;
-import com.healthcare.appointmentsystem.dto.TimeSlotDTO;
+
 import com.healthcare.appointmentsystem.model.DoctorAvailability;
+import com.healthcare.appointmentsystem.dto.TimeSlotDTO;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -17,4 +18,7 @@ public interface DoctorAvailabilityService {
     List<DoctorAvailability> findDoctorAvailabilityByDoctorIdAndSpecificDate(Long doctorId, LocalDate date);
     boolean isTimeSlotAvailable(Long doctorId, LocalDate date, LocalTime time);
     List<TimeSlotDTO> getAvailableTimeSlots(Long doctorId, LocalDate date);
+    
+    // Add the missing method declaration
+    boolean isDoctorAvailableAt(Long doctorId, LocalDate date, LocalTime time);
 }

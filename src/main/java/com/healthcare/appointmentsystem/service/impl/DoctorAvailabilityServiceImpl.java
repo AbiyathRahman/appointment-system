@@ -1,6 +1,7 @@
 package com.healthcare.appointmentsystem.service.impl;
 
 import com.healthcare.appointmentsystem.dto.TimeSlotDTO;
+import com.healthcare.appointmentsystem.exception.BadRequestException;
 import com.healthcare.appointmentsystem.exception.ConflictException;
 import com.healthcare.appointmentsystem.exception.ResourceNotFoundException;
 import com.healthcare.appointmentsystem.model.Appointment;
@@ -157,6 +158,38 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
 
 
+    }
+    /**
+     * Checks if a doctor is available at a specific date and time
+     *
+     * @param doctorId The ID of the doctor
+     * @param date The date to check availability for
+     * @param time The specific time to check
+     * @return true if the doctor is available, false otherwise
+     */
+    @Override
+    public boolean isDoctorAvailableAt(Long doctorId, LocalDate date, LocalTime time) {
+        if (doctorId == null || date == null || time == null) {
+            throw new BadRequestException("Doctor ID, date, and time cannot be null");
+        }
+
+        // Get the day of week from the date
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        // Find all availabilities for this doctor on this date (specific date entries or recurring weekly entries)
+        List<DoctorAvailability> availabilities = availabilityRepository.findAvailabilitiesForDate(
+                doctorId, date, dayOfWeek);
+
+        // If no availabilities found, doctor is not available
+        if (availabilities.isEmpty()) {
+            return false;
+        }
+
+        // Check if the requested time falls within any of the doctor's available time slots
+        return availabilities.stream().anyMatch(availability ->
+                time.equals(availability.getStartTime()) || time.equals(availability.getEndTime()) ||
+                        (time.isAfter(availability.getStartTime()) && time.isBefore(availability.getEndTime()))
+        );
     }
    private void checkForOverlappingAvailability(DoctorAvailability doctorAvailability){
         List<DoctorAvailability> existingAvailability;
