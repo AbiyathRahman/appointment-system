@@ -12,11 +12,15 @@ import com.healthcare.appointmentsystem.repository.DoctorAvailabilityRepository;
 import com.healthcare.appointmentsystem.repository.DoctorRepository;
 import com.healthcare.appointmentsystem.service.DoctorAvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,14 +109,83 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     public List<TimeSlotDTO> getAvailableTimeSlots(Long doctorID, LocalDate date){
         Doctor doctor = doctorRepository.findById(doctorID)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
-        List<DoctorAvailability> doctorAvailabilities = findDoctorAvailabilityByDoctorIdAndSpecificDate(doctorID, date);
+        List<DoctorAvailability> availabilities = findDoctorAvailabilityByDoctorIdAndSpecificDate(doctorID, date);
 
         List <Appointment> appointments = appointmentRepository.findAppointmentByDoctorId(doctorID)
                         .stream()
                         .filter(a -> a.getStatus() != AppointmentStatus.CANCELLED)
-                .collect(Collectors.toList());
+                        .toList();
+        List<TimeSlotDTO> slots = new ArrayList<>();
+        for (DoctorAvailability availability : availabilities) {
+            if(!availability.isAvailable()){
+                continue;
+            }
+            // Generate time slots
+            LocalTime currentTime = availability.getStartTime();
+            int slotDuration = availability.getSlotDuration();
+            while(currentTime.plusMinutes(slotDuration).isBefore(availability.getEndTime()) ||
+            currentTime.plusMinutes(slotDuration).equals(availability.getEndTime())){
+
+                LocalDateTime slotStart = LocalDateTime.of(date, currentTime);
+                LocalDateTime slotEnd = slotStart.plusMinutes(slotDuration);
+                boolean isAvailable = true;
+                for(Appointment appointment : appointments){
+                    LocalDateTime appointmentStart = appointment.getAppointmentDateTime();
+                    LocalDateTime appointmentEnd = appointment.getEndDateTime();
+                    if((slotStart.isBefore(appointmentStart) || slotStart.equals(appointmentEnd)) &&
+                            (slotEnd.isAfter(appointmentStart) || slotEnd.equals(appointmentStart))){
+                        isAvailable = false;
+                        break;
+
+                    }
+                }
+                if(isAvailable){
+                    TimeSlotDTO slot = TimeSlotDTO.builder()
+                            .startTime(LocalDate.from(slotStart))
+                            .endTime(LocalDate.from(slotEnd))
+                            .available(true)
+                            .doctorId(doctorID)
+                            .doctorName(doctor.getFirstName() + " " + doctor.getLastName())
+                            .build();
+                    slots.add(slot);
+                }
+                currentTime = currentTime.plusMinutes(slotDuration);
+            }
+        }
+        return slots.stream()
+                .sorted(Comparator.comparing(TimeSlotDTO::getStartTime)).collect(Collectors.toList());
 
 
 
     }
+   private void checkForOverlappingAvailability(DoctorAvailability doctorAvailability){
+        List<DoctorAvailability> existingAvailability;
+
+        if(doctorAvailability.getSpecificDate() != null){
+            // Check specific date availabilities
+            existingAvailability = findDoctorAvailabilityByDoctorIdAndSpecificDate(
+                    doctorAvailability.getDoctor().getId(), doctorAvailability.getSpecificDate());
+        }else if(doctorAvailability.getDayOfWeek() != null){
+            existingAvailability = availabilityRepository.findDoctorByIdAndDayOfWeek(
+                    doctorAvailability.getDoctor().getId(), doctorAvailability.getDayOfWeek()
+            );
+        }else{
+            throw new ConflictException("Doctor availability must have either specific date or day of week");
+        }
+        // Remove current availabiltiy from checks if its an update
+        if (doctorAvailability.getId() != null) {
+            existingAvailability = existingAvailability.stream()
+                    .filter(a -> !a.getId().equals(doctorAvailability.getId()))
+                    .collect(Collectors.toList());
+        }
+        for(DoctorAvailability existing : existingAvailability){
+            if(isTimeOverlapping(doctorAvailability.getStartTime(), doctorAvailability.getEndTime(),
+            existing.getStartTime(), existing.getEndTime())){
+                throw new ConflictException("Doctor availability overlaps with another availability");
+            }
+        }
+   }
+   private boolean isTimeOverlapping(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2){
+        return(start1.isBefore(end2) || start1.equals(end2)) && (end1.isAfter(start2) || end1.equals(start2));
+   }
 }
