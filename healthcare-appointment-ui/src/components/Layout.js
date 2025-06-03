@@ -50,7 +50,7 @@ const Layout = () => {
                 position="fixed"
                 sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
                 >
-                <ToolBar>
+                <Toolbar>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Healthcare Appointment System
                     </Typography>
@@ -58,7 +58,7 @@ const Layout = () => {
                         {currentUser?.username}
                     </Typography>
                     <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>Logout</Button>
-                </ToolBar>
+                </Toolbar>
             </AppBar>
             <Drawer
                 sx={{
