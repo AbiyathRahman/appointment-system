@@ -37,13 +37,15 @@ const UserProfile = () => {
             setLoading(true);
             const response = await userService.getCurrentUser();
             setProfile(response.data);
+            console.log('User profile loaded:', response.data); // Debug line
         } catch (err) {
             setError('Failed to fetch user profile');
-            console.error(err);
+            console.error('Profile fetch error:', err);
         } finally {
             setLoading(false);
         }
     };
+
 
     const handleSubmit = async (values, { setSubmitting, setStatus }) => {
         try {

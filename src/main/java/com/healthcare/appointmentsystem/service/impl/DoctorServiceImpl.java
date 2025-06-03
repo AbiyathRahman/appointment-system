@@ -12,59 +12,41 @@ import java.util.Optional;
 @Service
 public class DoctorServiceImpl implements DoctorService {
 
-    private final DoctorRepository doctorRepository;
-
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository) {
-        this.doctorRepository = doctorRepository;
-    }
-    @Override
-    public Doctor createDoctor(Doctor doctor) {
-        if(doctor == null){
-            throw new RuntimeException("Doctor cannot be null");
-        }
-        if(doctorRepository.existsByLicenseNumber(doctor.getLicenseNumber())){
-            throw new RuntimeException("License number already exists");
-        }
-        return doctorRepository.save(doctor);
-    }
-    @Override
-    public Doctor updateDoctor(Doctor doctor) {
-        if(!doctorRepository.existsById(doctor.getId())){
-            throw new RuntimeException("Doctor not found");
-        }
+    private DoctorRepository doctorRepository;
 
-        return doctorRepository.save(doctor);
-    }
     @Override
-    public void deleteDoctor(Long iD){
-        if(!doctorRepository.existsById(iD)){
-            throw new RuntimeException("Doctor not found");
-        }
-        doctorRepository.deleteById(iD);
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAll();
     }
 
     @Override
-    public Optional<Doctor> findDoctorById(Long id){
+    public Optional<Doctor> getDoctorById(Long id) {
         return doctorRepository.findById(id);
     }
 
     @Override
-    public Optional<Doctor> findDoctorByLicenseNumber(String licenseNumber){
-        return doctorRepository.findDoctorByLicenseNumber(licenseNumber);
-    }
-
-    @Override
-    public List<Doctor> findDoctorByFirstNameAndLastName(String firstName, String lastName){
-        return doctorRepository.findDoctorByFirstNameAndLastName(firstName, lastName);
-
-    }
-
-    @Override
-    public List<Doctor> findDoctorBySpecialization(String specialization){
+    public List<Doctor> getDoctorsBySpecialization(String specialization) {
         return doctorRepository.findDoctorBySpecialization(specialization);
     }
 
+    @Override
+    public Doctor createDoctor(Doctor doctor) {
+        return doctorRepository.save(doctor);
+    }
 
+    @Override
+    public Doctor updateDoctor(Doctor doctor) {
+        return doctorRepository.save(doctor);
+    }
 
+    @Override
+    public void deleteDoctor(Long id) {
+        doctorRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsByLicenseNumber(String licenseNumber) {
+        return doctorRepository.existsByLicenseNumber(licenseNumber);
+    }
 }

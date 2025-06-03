@@ -107,7 +107,7 @@ public class AppointmentMapper {
         
         // Set referenced entities
         if(dto.getDoctorId() != null){
-            doctorService.findDoctorById(dto.getDoctorId())
+            doctorService.getDoctorById(dto.getDoctorId())
                 .ifPresent(appointment::setDoctor);
         }
         if(dto.getPatientId() != null){
@@ -141,7 +141,7 @@ public class AppointmentMapper {
         
         // Update referenced entities
         if(dto.getDoctorId() != null) {
-            doctorService.findDoctorById(dto.getDoctorId())
+            doctorService.getDoctorById(dto.getDoctorId())
                 .ifPresent(appointment::setDoctor);
         }
         

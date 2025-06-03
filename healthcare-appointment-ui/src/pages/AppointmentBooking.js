@@ -45,7 +45,7 @@ const AppointmentBooking = () => {
             }
         };
 
-        fetchDoctors();
+        fetchDoctors().then(r => {});
     }, []);
 
     // Fetch available slots when doctor and date change

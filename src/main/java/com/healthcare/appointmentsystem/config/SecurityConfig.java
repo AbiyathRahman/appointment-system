@@ -23,12 +23,13 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() { return new JwtAuthenticationFilter();
-    }
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter; // Inject instead of creating
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passwordEncoder() { 
+        return new BCryptPasswordEncoder(); 
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfig) throws Exception {
@@ -45,7 +46,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        
+        // Use the injected filter instead of creating a new one
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
