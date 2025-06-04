@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,11 +87,11 @@ public class AppointmentController {
         return ResponseEntity.ok(responseDTOs);
     }
     @PreAuthorize("hasRole('ROLE_PATIENT') or hasRole('ROLE_ADMIN')")
-    @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByPatientId(@PathVariable Long patientId){
-        var appointmentsByPatient = appointmentService.findAppointmentByPatientId(patientId);
+    @GetMapping("/patient/{userId}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByPatientId(@PathVariable Long userId){
+        var appointmentsByPatient = appointmentService.findAppointmentByUserId(userId);
         if(appointmentsByPatient.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Collections.emptyList());
         }
         var responseDTOs = appointmentsByPatient.stream()
             .map(appointmentMapper::toResponseDTO)

@@ -11,6 +11,14 @@ import {
 
 // Validation schema
 const RegisterSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .min(3, 'First name must be at least 3 characters')
+        .max(50, 'First name must be less than 50 characters')
+        .required('First name is required'),
+    lastName: Yup.string()
+        .min(3, 'Last name must be at least 3 characters')
+        .max(50, 'Last name must be less than 50 characters')
+        .required('Last name is required'),
     username: Yup.string()
         .min(3, 'Username must be at least 3 characters')
         .max(50, 'Username must be less than 50 characters')
@@ -35,6 +43,8 @@ const Register = () => {
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             await register({
+                firstName: values.firstName,
+                lastName: values.lastName,
                 username: values.username,
                 email: values.email,
                 password: values.password
@@ -75,6 +85,8 @@ const Register = () => {
 
                     <Formik
                         initialValues={{
+                            firstName: '',
+                            lastName: '',
                             username: '',
                             email: '',
                             password: '',
@@ -85,6 +97,26 @@ const Register = () => {
                     >
                         {({ errors, touched, isSubmitting }) => (
                             <Form>
+                                <Field
+                                    as={TextField}
+                                    margin="normal"
+                                    fullWidth
+                                    name="firstName"
+                                    label="first name"
+                                    autoFocus
+                                    error={touched.firstName && !!errors.firstName}
+                                    helperText={touched.firstName && errors.firstName}
+                                />
+                                <Field
+                                    as={TextField}
+                                    margin="normal"
+                                    fullWidth
+                                    name="lastName"
+                                    label="lastName"
+                                    autoFocus
+                                    error={touched.lastName && !!errors.lastName}
+                                    helperText={touched.lastName && errors.lastName}
+                                />
                                 <Field
                                     as={TextField}
                                     margin="normal"

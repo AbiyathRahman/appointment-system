@@ -4,8 +4,11 @@ import com.healthcare.appointmentsystem.dto.AuthenticationResponseDTO;
 import com.healthcare.appointmentsystem.dto.LoginRequestDTO;
 import com.healthcare.appointmentsystem.dto.RegistrationRequestDTO;
 import com.healthcare.appointmentsystem.exception.BadRequestException;
+import com.healthcare.appointmentsystem.model.Gender;
+import com.healthcare.appointmentsystem.model.Patient;
 import com.healthcare.appointmentsystem.model.Role;
 import com.healthcare.appointmentsystem.model.User;
+import com.healthcare.appointmentsystem.repository.PatientRepository;
 import com.healthcare.appointmentsystem.repository.UserRepository;
 import com.healthcare.appointmentsystem.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -40,6 +44,8 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PatientRepository patientRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequestDTO loginRequest){
@@ -78,6 +84,16 @@ public class AuthController {
         user.setUserRole(Role.ROLE_PATIENT); // Default Role
 
         userRepository.save(user);
+
+        Patient patient = new Patient();
+        patient.setUser(user);
+        patient.setFirstName(registerRequest.getFirstName());
+        patient.setLastName(registerRequest.getLastName());
+        patient.setGender(Gender.MALE);
+        patient.setBirthDate(LocalDate.of(1985, 5, 15));
+        patientRepository.save(patient);
+
+
 
         return ResponseEntity.ok("User registered successfully!");
     }

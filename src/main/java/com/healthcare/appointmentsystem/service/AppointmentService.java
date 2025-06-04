@@ -16,7 +16,7 @@ public interface AppointmentService {
     Appointment findAppointmentById(Long id);
     Optional<Appointment> findAppointmentByDoctorIdAndPatientId(Long doctorId, Long patientId);
     List<Appointment> findAppointmentByDoctorId(Long doctorId);
-    List<Appointment> findAppointmentByPatientId(Long patientId);
+    List<Appointment> findAppointmentByUserId(Long userId);
     List<Appointment> findAppointmentByDate(LocalDateTime date);
     List<Appointment> findAppointmentBetweenDates(LocalDate startDate, LocalDate endDate);
     boolean isTimeSlotAvailable(Long doctorId, LocalDate date, int duration);

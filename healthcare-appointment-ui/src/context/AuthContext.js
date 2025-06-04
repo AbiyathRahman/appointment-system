@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   // Logout function
-  const logout = () => {
+  const logOut = () => {
     localStorage.removeItem('token');
     setCurrentUser(null);
   };
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
-    logout,
+    logOut,
     isAuthenticated: !!currentUser,
     isDoctor: currentUser?.role === 'ROLE_DOCTOR',
     isPatient: currentUser?.role === 'ROLE_PATIENT',

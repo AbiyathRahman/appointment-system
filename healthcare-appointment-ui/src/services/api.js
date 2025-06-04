@@ -72,8 +72,8 @@ export const doctorService = {
 // Appointment Service
 export const appointmentService = {
     getAppointments: () => api.get('/appointments'),
-    getAppointmentsByPatient: () => api.get('/appointments/patient'),
-    getAppointmentsByDoctor: () => api.get('/appointments/doctor'),
+    getAppointmentsByPatient: (patientId) => api.get(`/appointments/patient/${patientId}`),
+    getAppointmentsByDoctor: (doctorId) => api.get(`/appointments/doctor/${doctorId}`),
     getAppointmentById: (id) => api.get(`/appointments/${id}`),
     createAppointment: (appointment) => api.post('/appointments', appointment),
     updateAppointment: (appointment, id) => api.put(`/appointments/${id}`, appointment),

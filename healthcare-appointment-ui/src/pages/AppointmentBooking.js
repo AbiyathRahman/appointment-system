@@ -57,7 +57,7 @@ const AppointmentBooking = () => {
             // Format date as ISO string (YYYY-MM-DD)
             const formattedDate = date.toISOString().split('T')[0];
 
-            const response = await availabilityService.getAvailableTimeSlots(
+            const response = await availabilityService.getAvailabilities(
                 doctorId, formattedDate
             );
 

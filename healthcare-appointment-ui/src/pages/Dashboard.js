@@ -21,19 +21,24 @@ const Dashboard = () => {
             try {
                 let response;
                 if (isDoctor) {
-                    response = await appointmentService.getAppointmentsByDoctor();
+                    response = await appointmentService.getAppointmentsByDoctor(currentUser.id);
                 } else if (isAdmin) {
-                    // For admin, get all appointments (limited to 10 for dashboard)
-                    response = await appointmentService.getAllAppointments();
+                    response = await appointmentService.getAppointments();
                 } else {
-                    // For patients
-                    response = await appointmentService.getAppointmentsByPatient();
+                    response = await appointmentService.getAppointmentsByPatient(currentUser.id);
                 }
 
-                setAppointments(response.data);
+                // Handle both 200 with data and 204 no content
+                setAppointments(response.data || []);
             } catch (err) {
-                setError('Failed to fetch appointments');
+                // Only show error for actual errors, not empty results
+                if (err.response?.status === 404) {
+                    setError('User not found or invalid request');
+                } else {
+                    setError('Failed to fetch appointments');
+                }
                 console.error(err);
+
             } finally {
                 setLoading(false);
             }

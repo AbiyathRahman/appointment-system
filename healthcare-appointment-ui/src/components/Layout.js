@@ -16,7 +16,6 @@ import {
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
-
 const Layout = () => {
     const { currentUser, logOut, isDoctor, isAdmin } = useAuth();
     const navigate = useNavigate();
@@ -25,6 +24,7 @@ const Layout = () => {
         logOut();
         navigate('/login');
     };
+
     const menuItems = [
         {text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard'},
         {text: 'Book Appointment', icon: <EventIcon />, path: '/appointments/book', hideForDoctor: true},

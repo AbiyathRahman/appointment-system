@@ -8,6 +8,7 @@ import com.healthcare.appointmentsystem.model.AppointmentStatus;
 import com.healthcare.appointmentsystem.repository.AppointmentRepository;
 import com.healthcare.appointmentsystem.repository.DoctorRepository;
 import com.healthcare.appointmentsystem.repository.PatientRepository;
+import com.healthcare.appointmentsystem.repository.UserRepository;
 import com.healthcare.appointmentsystem.service.AppointmentService;
 import com.healthcare.appointmentsystem.service.DoctorAvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +28,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     // Properly declare the DoctorAvailabilityService as a field
     private final DoctorAvailabilityService availabilityService;
+    private final UserRepository userRepository;
 
     @Autowired
     public AppointmentServiceImpl(
             AppointmentRepository appointmentRepository,
             PatientRepository patientRepository,
             DoctorRepository doctorRepository,
-            DoctorAvailabilityService availabilityService) {
+            DoctorAvailabilityService availabilityService, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
         this.availabilityService = availabilityService;
+        this.userRepository = userRepository;
     }
 
 
@@ -175,11 +178,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Appointment> findAppointmentByPatientId(Long patientId) {
-        if (!patientRepository.existsById(patientId)) {
-            throw new ResourceNotFoundException("Patient", "id", patientId);
+    public List<Appointment> findAppointmentByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("Patient", "id", userId);
         }
-        return appointmentRepository.findAppointmentByPatientId(patientId);
+        return appointmentRepository.findAppointmentByUserId(userId);
     }
     
     @Override
