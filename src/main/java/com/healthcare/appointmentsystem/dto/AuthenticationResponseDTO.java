@@ -14,6 +14,8 @@ public class AuthenticationResponseDTO {
     private String tokenType = "Bearer";
     private Long userId;
     private String username;
+    private String firstName;
+    private String lastName;
     private String email;
     private String role;
 }

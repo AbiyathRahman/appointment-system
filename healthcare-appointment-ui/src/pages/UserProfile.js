@@ -51,7 +51,7 @@ const UserProfile = () => {
         try {
             await userService.updateProfile(values);
             setStatus({ success: 'Profile updated successfully' });
-            fetchUserProfile();
+            await fetchUserProfile();
         } catch (err) {
             setStatus({
                 error: err.response?.data?.message || 'Failed to update profile'

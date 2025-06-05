@@ -20,6 +20,7 @@ public interface UserService {
     boolean existsByUsername(String username);
     // Get a list of all users
     List<User> findAllUsers();
-
+    Optional<User> findUserByEmail(String email);
+    boolean existsByEmail(String email);
 
 }

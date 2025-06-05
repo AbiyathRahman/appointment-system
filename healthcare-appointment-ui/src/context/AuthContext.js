@@ -24,13 +24,16 @@ export const AuthProvider = ({ children }) => {
             setCurrentUser(null);
           } else {
             // Token valid, fetch user data
+            console.log('Fetching user data on reload...');
             const response = await userService.getCurrentUser();
+            console.log('User data from API:', response.data);
             setCurrentUser(response.data);
           }
         }
       } catch (error) {
         console.error('Authentication error:', error);
         localStorage.removeItem('token');
+        setCurrentUser(null);
       } finally {
         setLoading(false);
       }
@@ -44,7 +47,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login({ username, password });
       localStorage.setItem('token', response.data.token);
-      setCurrentUser(response.data);
+      
+      // After login, fetch the complete user profile to ensure consistency
+      console.log('Login response:', response.data);
+      try {
+        const userResponse = await userService.getCurrentUser();
+        console.log('Complete user profile:', userResponse.data);
+        setCurrentUser(userResponse.data);
+      } catch (profileError) {
+        console.error('Failed to fetch complete profile, using login data:', profileError);
+        // If profile fetch fails, use login response data
+        setCurrentUser(response.data);
+      }
+      
       return response.data;
     } catch (error) {
       throw error;

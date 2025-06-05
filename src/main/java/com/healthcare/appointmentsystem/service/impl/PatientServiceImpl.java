@@ -3,6 +3,7 @@ package com.healthcare.appointmentsystem.service.impl;
 import com.healthcare.appointmentsystem.model.Patient;
 import com.healthcare.appointmentsystem.repository.PatientRepository;
 import com.healthcare.appointmentsystem.service.PatientService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ public class PatientServiceImpl implements PatientService {
         return patientRepository.save(patient);
     }
     @Override
+    @Transactional
     public Patient updatePatient(Patient patient) {
         if(!patientRepository.existsById(patient.getId())){
             throw new RuntimeException("Patient not found");
@@ -58,6 +60,9 @@ public class PatientServiceImpl implements PatientService {
     public Optional<Patient> findPatientByFirstNameAndLastName(String firstName, String lastName){
         return patientRepository.findPatientByFirstNameAndLastName(firstName, lastName);
     }
-
+    @Override
+    public Optional<Patient> findPatientByUserId(Long userId) {
+        return patientRepository.findByUserId(userId);
+    }
 
 }

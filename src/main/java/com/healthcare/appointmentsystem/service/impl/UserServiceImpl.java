@@ -3,6 +3,7 @@ package com.healthcare.appointmentsystem.service.impl;
 import com.healthcare.appointmentsystem.model.User;
 import com.healthcare.appointmentsystem.repository.UserRepository;
 import com.healthcare.appointmentsystem.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
+    @Transactional
     public User updateUser(User user) {
         return userRepository.save(user);
     }
@@ -49,4 +51,14 @@ public class UserServiceImpl implements UserService {
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public boolean existsByEmail(String email){
+        return userRepository.existsByEmail(email);
+    }
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 }

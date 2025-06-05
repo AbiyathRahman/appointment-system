@@ -16,5 +16,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     Optional <Patient> findPatientByBirthDate(LocalDate birthDate);
     boolean existsByFirstName(String firstName);
     boolean existsByLastName(String lastName);
+    Optional<Patient> findByUserId(Long userId);
+
 
 }

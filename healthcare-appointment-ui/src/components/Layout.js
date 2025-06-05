@@ -55,7 +55,12 @@ const Layout = () => {
                         Healthcare Appointment System
                     </Typography>
                     <Typography variant="subtitle1" sx={{mr:2}}>
-                        {currentUser?.username}
+                        {`Welcome, ${currentUser?.firstName && currentUser?.lastName
+                            ? `${currentUser.firstName} ${currentUser.lastName}`
+                            : currentUser?.username}`}
+
+
+
                     </Typography>
                     <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>Logout</Button>
                 </Toolbar>

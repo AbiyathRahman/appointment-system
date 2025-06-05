@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -59,15 +60,29 @@ public class AuthController {
 
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
+        String firstName = null;
+        String lastName = null;
+        if (user.getUserRole() == Role.ROLE_PATIENT) {
+            Optional<Patient> patientOpt = patientRepository.findByUserId(user.getId());
+            if (patientOpt.isPresent()) {
+                Patient patient = patientOpt.get();
+                firstName = patient.getFirstName();
+                lastName = patient.getLastName();
+            }
+        }
 
-        return ResponseEntity.ok(new AuthenticationResponseDTO(
-                jwt,
-                "Bearer",
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getUserRole().name()
-        ));
+
+        return ResponseEntity.ok(AuthenticationResponseDTO.builder()
+                .token(jwt)
+                .tokenType("Bearer")
+                .userId(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .firstName(firstName)
+                .lastName(lastName)
+                .role(user.getUserRole().name())
+                .build());
+
     }
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Validated @RequestBody RegistrationRequestDTO registerRequest){

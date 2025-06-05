@@ -15,18 +15,34 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id; // Changed from long to Long
 
     @Column(name="username", unique=true, nullable=false)
     private String username;
+
     @Column(nullable = false)
     private String password;
+
     @Column(unique = true, nullable = false)
     private String email;
 
+    // Add these new fields for user profile
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address", columnDefinition = "TEXT")
+    private String address;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "roles", nullable = false)
-    private Role userRole ;
+    @Column(name = "role", nullable = false) // Fixed column name
+    private Role userRole;
+
     @Column(name = "account_non_expired")
     private boolean accountNonExpired = true;
 
@@ -59,21 +75,14 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-
     }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
-
     }
-
-
-
-
 }
